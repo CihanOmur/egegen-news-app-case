@@ -1,0 +1,285 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+button {
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #f0f0f0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    height: 100vh;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.box {
+    background-color: white;
+    border: 1px solid black;
+}
+
+/* Grid Layout */
+.box1 {
+    grid-column: 1 / span 3;
+    grid-row: 1 / span 2;
+}
+
+.box2 {
+    grid-column: 4 / span 2;
+    grid-row: 1;
+}
+
+.box3 {
+    grid-column: 6 / span 1;
+    grid-row: 1 / span 2;
+}
+
+.box4 {
+    grid-column: 4 / span 2;
+    grid-row: 2;
+}
+
+.box5 {
+    grid-column: 1 / span 2;
+    grid-row: 3;
+}
+
+.box6 {
+    grid-column: 3 / span 3;
+    grid-row: 3;
+}
+
+.box7 {
+    grid-column: 6 / span 1;
+    grid-row: 3 / span 2;
+}
+
+.box8 {
+    grid-column: 1 / span 3;
+    grid-row: 4;
+}
+
+.box9 {
+    grid-column: 4 / span 2;
+    grid-row: 4;
+}
+
+@media (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: minmax(150px, auto);
+        grid-template-rows: none;
+        height: auto;
+    }
+
+    .box {
+        grid-column: auto !important;
+        grid-row: auto !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+header {
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+}
+
+.container {
+    width: 90%;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* Menu */
+nav {
+    position: relative;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+}
+
+ul li {
+    position: relative;
+}
+
+ul li a,
+ul li button {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+ul li a:hover,
+ul li button:hover {
+    color: #c1dfff;
+}
+
+/* Dropdown content */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    min-width: 140px;
+    z-index: 100;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 8px 12px;
+    color: #333;
+}
+
+.dropdown-content a:hover {
+    background-color: #f0f0f0;
+    color: #007BFF;
+}
+
+/* Show dropdown on hover */
+li.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Hamburger menu for mobile */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.hamburger div {
+    width: 25px;
+    height: 3px;
+    background: #333;
+}
+
+/* Hide hamburger on larger screens */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    border-top: 1px solid #ccc;
+}
+
+.mobile-menu a,
+.mobile-menu button {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.mobile-menu a:hover,
+.mobile-menu button:hover {
+    background: #f0f0f0;
+    color: #007BFF;
+}
+
+/* Mobil dropdown */
+.mobile-dropdown-content {
+    display: none;
+    flex-direction: column;
+    padding-left: 15px;
+}
+
+.mobile-dropdown-content a {
+    padding: 10px 15px;
+    font-size: 15px;
+}
+
+/* Responsive for Grid Layout */
+@media (max-width: 768px) {
+    nav>ul {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+}
+
+/* This is for the accordion component */
+.accordion-item {
+    border: 1px solid #ccc;
+    margin-bottom: 8px;
+    border-radius: 5px;
+}
+
+.accordion-header {
+    background: #007BFF;
+    color: white;
+    padding: 15px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.accordion-header.active {
+    background: #0056b3;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0 15px;
+    background: #f1f1f1;
+}
+
+.accordion-content.open {
+    padding: 15px;
+}
