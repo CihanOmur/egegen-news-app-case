@@ -6,24 +6,24 @@ use App\Http\Middleware\TokenAuthMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('news')
-    ->middleware(['api']) // Laravel varsayılan 'api' middleware grubu (rate limit, json, vs.)
+    ->middleware(['api']) // API middleware group
     ->group(function () {
 
-        // Haberleri listele (Herkese açık)
+        // Get all news 
         Route::get('/', [NewsController::class, 'index']);
 
-        // Habere özel erişim (Herkese açık)
+        // Get news by ID
         Route::get('/{id}', [NewsController::class, 'show']);
 
         Route::middleware([TokenAuthMiddleware::class, LogRequestMiddleware::class])->group(function () {
 
-            // Haberi ekle (Token doğrulama + loglama)
+            // Store a new news item (Token control + logging)
             Route::post('/', [NewsController::class, 'store']);
 
-            // Haberi güncelle (Token doğrulama + loglama)
+            // Update an existing news item (Token control + logging)
             Route::post('/update/{id}', [NewsController::class, 'update']);
 
-            // Haberi sil (Token doğrulama + loglama)
+            // Delete a news item (Token control + logging)
             Route::delete('/{id}', [NewsController::class, 'destroy']);
         });
     });

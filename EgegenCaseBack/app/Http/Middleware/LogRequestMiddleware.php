@@ -16,7 +16,7 @@ class LogRequestMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Gelen API isteğini logla
+        // Keep the request logging simple and efficient
         Logs::create([
             'ip'            => $request->ip(),                  // İsteği gönderen IP adresi
             'method'        => $request->method(),              // HTTP metodu (GET, POST, vs.)
@@ -27,7 +27,7 @@ class LogRequestMiddleware
             ),
         ]);
 
-        // İsteği bir sonraki middleware veya kontrolcüye ilet
+        // next middleware or controller
         return $next($request);
     }
 }

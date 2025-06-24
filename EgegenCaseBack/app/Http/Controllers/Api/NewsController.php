@@ -15,7 +15,7 @@ class NewsController extends Controller
 {
     public function index(Request $request)
     {
-        // Arama filtresi varsa sorguya ekle
+        // if 'search' parameter is present, filter news by title or content
         $newsQuery = News::query();
 
         if ($request->filled('search')) {
@@ -26,10 +26,9 @@ class NewsController extends Controller
             });
         }
 
-        // Sayfalama: Sayfa başına 20 kayıt
         $news = $newsQuery->paginate(20);
 
-        // JSON olarak paginasyon bilgileri ve haberleri döndür
+        // Pagination response with links and meta information
         return response()->json([
             'data' => $news->items(),
             'links' => [
@@ -53,17 +52,17 @@ class NewsController extends Controller
 
     public function show(int $id)
     {
-        // ID ile haberi bul
+        // Find the news by ID
         $news = News::find($id);
 
-        // Haber bulunamadıysa 404 döndür
+        // If news not found, return 404
         if (!$news) {
             return response()->json([
                 'message' => 'Haber bulunamadı.'
             ], 404);
         }
 
-        // Haber bulunduysa veri ve mesaj ile 200 döndür
+        // Return the news data with a success message
         return response()->json([
             'data' => $news,
             'message' => 'Haber başarıyla bulundu.'
@@ -72,28 +71,28 @@ class NewsController extends Controller
 
     public function store(StoreNewsRequest $request)
     {
-        // Yeni haber modeli oluştur
+        // Create a new News instance
         $news = new News();
         $news->title = $request->title;
         $news->content = $request->content;
 
-        // Eğer istek içinde 'image' dosyası varsa işle
+        // If an image is uploaded, process it
         if ($request->hasFile('image')) {
             $imageFile = $request->file('image');
 
-            // Benzersiz dosya adı oluştur, .webp formatı kullan
+            // create a unique filename using UUID
             $filename = Str::uuid() . '.webp';
 
-            // Görseli 800x800 boyutuna orantılı olarak yeniden boyutlandır ve webp olarak encode et
+            // resize the image to 800x800 and encode it as webp
             $img = Image::read($imageFile->path());
             $imagePath = storage_path('app/public/news');
 
-            // Eğer klasör yoksa oluştur
+            // if the directory does not exist, create it
             if (!file_exists($imagePath)) {
                 mkdir($imagePath, 0755, true);
             }
 
-            // Resmi kaydet
+            // save the resized image
             $img->resize(800, 800, function ($constraint) {
                 $constraint->aspectRatio();
             })->save($imagePath . '/' . $filename);
@@ -101,10 +100,10 @@ class NewsController extends Controller
             $news->image_path = "storage/news/{$filename}";
         }
 
-        // Haber kaydını veritabanına kaydet
+        // save the news to the database
         $news->save();
 
-        // Başarılı yanıt dön (201 Created)
+        // return a success response
         return response()->json([
             'message' => 'Haber başarıyla eklendi.'
         ], 201);
@@ -113,25 +112,24 @@ class NewsController extends Controller
 
     public function update(StoreNewsRequest $request, int $id)
     {
-        // Güncellenecek haberi bul
+        // find the news by ID
         $news = News::find($id);
 
-        // Haber yoksa 404 döndür
+        // if news not found, return 404
         if (!$news) {
             return response()->json([
                 'message' => 'Haber bulunamadı.'
             ], 404);
         }
 
-        // Gelen verilerle haber başlığı ve içeriğini güncelle
+        // Update the news title and content
         $news->title = $request->title;
         $news->content = $request->content;
 
-        // Eğer yeni bir resim yüklenmişse eski resmi sil ve yenisini kaydet
+        // If an image is uploaded, process it
         if ($request->hasFile('image')) {
             // Var olan resmi storage'dan sil (varsa)
             if ($news->image_path) {
-                // 'storage/' ile başlayan yolu 'public/' ile değiştiriyoruz çünkü Storage bu şekilde çalışır
                 Storage::delete(str_replace('storage/', 'public/', $news->image_path));
             }
 
@@ -139,7 +137,7 @@ class NewsController extends Controller
             $filename = Str::uuid() . '.webp';
 
 
-            // Görseli 800x800 boyutuna orantılı olarak yeniden boyutlandır ve webp olarak encode et
+            // resize the image to 800x800 and encode it as webp
             $img = Image::read($imageFile->path());
             $imagePath = storage_path('app/public/news');
 
@@ -151,11 +149,11 @@ class NewsController extends Controller
                 $constraint->aspectRatio();
             })->save($imagePath . '/' . $filename);
 
-            // Yeni resim yolunu modelde güncelle
+            // update the image path in the news model
             $news->image_path = "storage/news/{$filename}";
         }
 
-        // Veritabanında güncelle
+        // Save the updated news to the database
         $news->save();
 
         return response()->json([
@@ -165,26 +163,25 @@ class NewsController extends Controller
 
     public function destroy(int $id)
     {
-        // Silinecek haberi bul
+        // find the news by ID
         $news = News::find($id);
 
-        // Haber yoksa 404 döndür
+        // if news not found, return 404
         if (!$news) {
             return response()->json([
                 'message' => 'Haber bulunamadı.'
             ], 404);
         }
 
-        // Haber ile ilişkili resim dosyası varsa sil
+        // delete the image from storage if it exists
         if ($news->image_path) {
-            // 'storage/' ile başlayan yolu 'public/' ile değiştiriyoruz çünkü Storage bu şekilde çalışır
             Storage::delete(str_replace('storage/', 'public/', $news->image_path));
         }
 
-        // Haber kaydını veritabanından sil
+        // Delete the news from the database
         $news->delete();
 
-        // Başarı mesajı ile 200 OK döndür
+        // return a success response
         return response()->json([
             'message' => 'Haber başarıyla silindi.'
         ], 200);

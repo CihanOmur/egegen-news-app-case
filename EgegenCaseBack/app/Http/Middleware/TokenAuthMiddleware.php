@@ -24,14 +24,14 @@ class TokenAuthMiddleware
         $validToken = '2BH52wAHrAymR7wP3CASt';
         $maxFailures = 10;
         $blacklistDuration = now()->addMinutes(10);
-        // Eğer IP kara listede ise erişimi engelle
+        // if IP is already blacklisted, return 403 Forbidden
         if (Cache::has($blacklistCacheKey)) {
             return response()->json([
                 'message' => 'Bu IP adresi 10 dakika boyunca engellenmiştir.'
             ], 403);
         }
 
-        // Token doğrulaması
+        // Check if the request has a valid token
         if ($authToken !== $validToken) {
             if (!Cache::has($failureCacheKey)) {
                 Cache::put($failureCacheKey, 1, now()->addMinutes(10));
@@ -40,20 +40,20 @@ class TokenAuthMiddleware
                 $failureCount = Cache::increment($failureCacheKey);
             }
 
-            // Eğer başarısız giriş sayısı sınırı aşarsa IP'yi kara listeye al
+            // if failure count exceeds max failures, blacklist the IP
             if ($failureCount >= $maxFailures) {
                 Cache::put($blacklistCacheKey, true, $blacklistDuration);
                 Cache::forget($failureCacheKey);
             } else {
-                // Bir sonraki middleware veya controller'a devam et
+                // next middleware or controller
                 return $next($request);
             }
         }
 
-        // Başarılı giriş: başarısız denemeleri sıfırla
+        // If the token is valid, reset the failure count
         Cache::forget($failureCacheKey);
 
-        // Bir sonraki middleware veya controller'a devam et
+        // next middleware or controller
         return $next($request);
     }
 }
